@@ -5,94 +5,80 @@ const postController = {
     getAll: async (req, res) => {
         try {
 
-            const users = await postModel.find().populate("user_id")
-            return res.status(200).json({ success: true, data: users });
+            const posts = await postModel.find().populate("user_id")
+            if (!posts) {
+                return res.status(400).json({ success: false, message: "No Post Found" });
+            }
+            return res.status(200).json({ success: true, data: posts });
         }
         catch (e) {
-            console.log("getting Error");
+            return res.status(500).json({ success: false, message: "Internal Server Error" });
         }
     },
     getAllForOneUser: async (req, res) => {
-        const user_id = req.params.userId
         try {
-
-            const users = await postModel.find();
-            // console.log(users);
-            users.forEach((elem) => {
-                console.log("user --------------------")
-                console.log(elem.user_id == user_id)
-                console.log(elem.user_id)
-                console.log(user_id)
-            })
-            const sortUsers = users.filter((elem) => elem.user_id == user_id)
-            return res.status(200).json({ success: true, data: sortUsers });
+            const user_id = req.params.userId
+            const posts = await postModel.find({ user_id })
+            if (!posts) {
+                return res.status(400).json({ success: false, message: "No Post Found" });
+            }
+            return res.status(200).json({ success: true, data: posts });
         }
         catch (e) {
-            console.log("getting Error");
+            return res.status(500).json({ success: false, message: "Internal Server Error" });
         }
     },
     getOneById: async (req, res) => {
-        const id = req.params.id;
         try {
+            const id = req.params.id;
             const post = await postModel.findById(id)
-            if (post) {
-                return res.status(200).json({ success: true, data: post });
-            }
-            else {
+            if (!post) {
                 return res.status(400).json({ success: false, message: "No Post Found" });
             }
+            return res.status(200).json({ success: true, data: post });
         }
         catch (e) {
-            return res.status(400).json({ success: false, message: "PostId is Wrong" });
+            return res.status(500).json({ success: false, message: "Internal Server Error" });
         }
     },
     create: async (req, res) => {
-        const { title, description, user_id } = req.body
-        console.log(title)
-        console.log(description)
         try {
+            const { title, description, user_id } = req.body
             const post = await postModel.create({ title, description, user_id })
-            if (post) {
-                return res.status(200).json({ success: true, message: "Post Posted Successfully" });
-            }
-            else {
+            if (!post) {
                 return res.status(400).json({ success: false, message: "Post Posting Error" });
             }
+            return res.status(200).json({ success: true, message: "Post Successfully" });
         }
         catch (e) {
-            console.log(e, "error")
-            return res.status(400).json({ success: false, message: "Something Went Wrong" });
+            return res.status(500).json({ success: false, message: "Internal Server Error" });
         }
     },
     update: async (req, res) => {
-        const id = req.params.id;
-        const data = req.body;
         try {
+            const id = req.params.id;
+            const data = req.body;
             const post = await postModel.findByIdAndUpdate(id, data)
-            if (post) {
-                return res.status(200).json({ success: true, message: "Post Updated Successfully", data: post });
-            }
-            else {
+            if (!post) {
                 return res.status(400).json({ success: false, message: "No Post Found" });
             }
+            return res.status(200).json({ success: true, message: "Post Updated Successfully" });
         }
         catch (e) {
-            return res.status(400).json({ success: false, message: "Something Went Wrong" });
+            return res.status(500).json({ success: false, message: "Internal Server Error" });
         }
     },
     delete: async (req, res) => {
-        const id = req.params.id;
         try {
+            const id = req.params.id;
             const user = await postModel.findByIdAndRemove(id)
-            if (post) {
-                return res.status(200).json({ success: true, message: "Post Deleted Successfully", data: post });
-            }
-            else {
+            if (!post) {
                 return res.status(400).json({ success: false, message: "No Post Found" });
             }
+            return res.status(200).json({ success: true, message: "Post Deleted Successfully", data: post });
         }
         catch (e) {
-            return res.status(400).json({ success: false, message: "Something Went Wrong" });
+            return res.status(500).json({ success: false, message: "Internal Server Error" });
         }
     },
 }

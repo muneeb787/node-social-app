@@ -3,101 +3,58 @@ import postModel from "../../models/posts.js";
 
 const postLikesController = {
     getAll: async (req, res) => {
-        const { postId } = req.params;
         try {
-            const post = await postModel.findById(postId);
-            if (post) {
-                const likes = await post.likes;
-                if (likes) {
-
-                    return res.status(200).json({ success: true, data: likes });
-                }
-                else {
-                    return res.status(400).json({ success: false, message: "Liking Error" });
-
-                }
-
+            const { postId } = req.params;
+            const post = await postModel.findById(postId)
+            if (!post) {
+                return res.status(400).json({ success: false, message: "No Likes" });
             }
-            else {
-                return res.status(400).json({ success: false, message: "No Post Found" });
-            }
+            return res.status(200).json({ success: true, data: post.likes });
         }
         catch (e) {
-            console.log(e, "error")
-            return res.status(400).json({ success: false, message: "Something Went Wrong" });
+            return res.status(500).json({ success: false, message: "Internal Server Error" });
         }
     },
     countLikes: async (req, res) => {
-        const { postId } = req.params;
         try {
+            const { postId } = req.params;
             const post = await postModel.findById(postId);
-            if (post) {
-                const likes = await post.likes.length;
-                if (likes) {
-
-                    return res.status(200).json({ success: true, data: likes });
-                }
-                else {
-                    return res.status(400).json({ success: false, message: "Likes Error" });
-
-                }
-
-            }
-            else {
+            if (!post) {
                 return res.status(400).json({ success: false, message: "No Post Found" });
             }
+            return res.status(200).json({ success: true, data: post.likes.length });
         }
         catch (e) {
-            console.log(e, "error")
-            return res.status(400).json({ success: false, message: "Something Went Wrong" });
+            return res.status(500).json({ success: false, message: "Internal Server Error" });
         }
     },
     likes: async (req, res) => {
-        const { postId } = req.params;
-        const { user_id } = req.body
-        console.log(user_id);
         try {
+            const { postId } = req.params;
+            const { user_id } = req.body;
+    
             const post = await postModel.findById(postId);
-            if (post) {
-                console.log(post.likes)
-                const like = post.likes.find((elem) => elem.user_id == user_id)
-                console.log(like, "likes");
-                if (like) {
-                    const likeIndex = post.likes.findIndex((elem) => elem.user_id == user_id)
-                    const commentStatus = await post.likes.splice(likeIndex,1)
-                    if (commentStatus) {
-                        post.save().then(() => {
-                            return res.status(200).json({ success: true, message: "UnLiked Successfully" });
-                        });
-                    }
-                    else {
-                        return res.status(400).json({ success: false, message: "UnLiking Error" });
-
-                    }
-                }
-                else {
-                    const commentStatus = await post.likes.push({ user_id })
-                    if (commentStatus) {
-                        post.save().then(() => {
-                            return res.status(200).json({ success: true, message: "Liked Successfully" });
-                        });
-                    }
-                    else {
-                        return res.status(400).json({ success: false, message: "Liking Error" });
-
-                    }
-
-                }
-
-            }
-            else {
+            if (!post) {
                 return res.status(400).json({ success: false, message: "No Post Found" });
             }
-        }
-        catch (e) {
-            return res.status(400).json({ success: false, message: "Something Went Wrong" });
+    
+            const likeIndex = post.likes.findIndex((elem) => elem.user_id == user_id);
+    
+            if (likeIndex !== -1) {
+                post.likes.splice(likeIndex, 1);
+                await post.save();
+                return res.status(200).json({ success: true, message: "UnLiked Successfully" });
+            } else {
+                post.likes.push({ user_id });
+                await post.save();
+                return res.status(200).json({ success: true, message: "Liked Successfully" });
+            }
+        } catch (e) {
+            console.error(e);
+            return res.status(500).json({ success: false, message: "Internal Server Error" });
         }
     }
+    
 }
 
 export default postLikesController

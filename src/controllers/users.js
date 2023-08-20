@@ -2,90 +2,70 @@ import usersModel from "../models/users.js";
 import bcrypt from "bcrypt";
 
 const userController = {
-    getAll: async (req,res)=>{
-        try{
-
+    getAll: async (req, res) => {
+        try {
             const users = await usersModel.find()
+            if (!users) {
+                return res.status(400).json({ success: false, message: "No Users Found" });
+            }
             return res.status(200).json({ success: true, data: users });
         }
-        catch(e)
-        {
-            console.log("getting Error");
+        catch (e) {
+            return res.status(500).json({ success: false, message: "Internal Server Error" });
         }
     },
-    getOneById: async (req,res)=>{
+    getOneById: async (req, res) => {
         const id = req.params.id;
-        try{
+        try {
             const user = await usersModel.findById(id)
-            if(user)
-            {
-                return res.status(200).json({ success: true, data: user });
-            }
-            else
-            {
+            if (!user) {
                 return res.status(400).json({ success: false, message: "No User Found" });
             }
+            return res.status(200).json({ success: true, data: user });
         }
-        catch(e)
-        {
-            return res.status(400).json({ success: false, message: "UserId is Wrong" });
-        }
-    },
-    create: async (req,res)=>{
-        const {name,email,password} = req.body
-        const hashPassword = await bcrypt.hash(password, 12)
-        console.log(hashPassword);
-        try{
-            const user = await usersModel.create({name,email,password: hashPassword})
-            if(user)
-            {
-                return res.status(200).json({ success: true, message: "User Created Successfully" });
-            }
-            else
-            {
-                return res.status(400).json({ success: false, message: "User Creation Error" });
-            }
-        }
-        catch(e)
-        {
-            return res.status(400).json({ success: false, message: "Something Went Wrong" });
+        catch (e) {
+            return res.status(500).json({ success: false, message: "Internal Server Error" });
         }
     },
-    update: async (req,res)=>{
+    create: async (req, res) => {
+        try {
+            const { name, email, password } = req.body
+            const hashPassword = await bcrypt.hash(password, 12)
+            const user = await usersModel.create({ name, email, password: hashPassword })
+            if (!user) {
+                return res.status(400).json({ success: false, message: "User Not Created" });
+            }
+            return res.status(200).json({ success: true, message: "User Created Successfully" });
+        }
+        catch (e) {
+            return res.status(500).json({ success: false, message: "Internal Server Error" });
+        }
+    },
+    update: async (req, res) => {
         const id = req.params.id;
         const data = req.body;
-        try{
-            const user = await usersModel.findByIdAndUpdate(id,data)
-            if(user)
-            {
-                return res.status(200).json({ success: true, message: "Data Updated Successfully", data: user });
-            }
-            else
-            {
+        try {
+            const user = await usersModel.findByIdAndUpdate(id, data)
+            if (!user) {
                 return res.status(400).json({ success: false, message: "No User Found" });
             }
+            return res.status(200).json({ success: true, message: "Data Updated Successfully", data: user });
         }
-        catch(e)
-        {
+        catch (e) {
             return res.status(400).json({ success: false, message: "Something Went Wrong" });
         }
     },
-    delete: async (req,res)=>{
+    delete: async (req, res) => {
         const id = req.params.id;
-        try{
+        try {
             const user = await usersModel.findByIdAndRemove(id)
-            if(user)
-            {
-                return res.status(200).json({ success: true, message: "Data Deleted Successfully", data: user });
-            }
-            else
-            {
+            if (!user) {
                 return res.status(400).json({ success: false, message: "No User Found" });
             }
+            return res.status(200).json({ success: true, message: "Data Deleted Successfully", data: user });
         }
-        catch(e)
-        {
-            return res.status(400).json({ success: false, message: "Something Went Wrong" });
+        catch (e) {
+            return res.status(500).json({ success: false, message: "Internal Server Error" });
         }
     },
 }

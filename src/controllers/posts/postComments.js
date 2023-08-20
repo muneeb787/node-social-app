@@ -2,101 +2,57 @@ import postModel from "../../models/posts.js";
 
 
 const postCommentsController = {
-    getAll: async (req,res)=>{
-        const {postId} = req.params;
-        try{
+    getAll: async (req, res) => {
+        try {
+            const { postId } = req.params;
             const post = await postModel.findById(postId);
-            if(post)
-            {
-                console.log(post,"post is:")
-                const comments = await post.comments;
-                console.log(comments,"comment is:")
-                if(comments)
-                {
-                    
-                        return res.status(200).json({ success: true, data: comments });
-                }
-                else
-                {
-                    return res.status(400).json({ success: false, message: "Commented Error" });
-
-                }
-                
-            }
-            else
-            {
+            if (!post) {
                 return res.status(400).json({ success: false, message: "No Post Found" });
             }
+            const comments = await post.comments;
+            if (comments) {
+                return res.status(200).json({ success: true, data: comments });
+            }
+            else {
+                return res.status(400).json({ success: false, message: "No Comments Found" });
+            }
         }
-        catch(e)
-        {
-            console.log(e,"error")
-            return res.status(400).json({ success: false, message: "Something Went Wrong" });
+        catch (e) {
+            return res.status(500).json({ success: false, message: "Internal Server Error" });
         }
     },
-    countComments: async (req,res)=>{
-        const {postId} = req.params;
-        try{
+    countComments: async (req, res) => {
+        const { postId } = req.params;
+        try {
             const post = await postModel.findById(postId);
-            if(post)
-            {
-                console.log(post,"post is:")
-                const comments = await post.comments.length;
-                console.log(comments,"comment is:")
-                if(comments)
-                {
-                    
-                        return res.status(200).json({ success: true, data: comments });
-                }
-                else
-                {
-                    return res.status(400).json({ success: false, message: "Commented Error" });
-
-                }
-                
-            }
-            else
-            {
+            if (!post) {
                 return res.status(400).json({ success: false, message: "No Post Found" });
             }
+            return res.status(200).json({ success: true, data: post.comments.length });
         }
-        catch(e)
-        {
-            console.log(e,"error")
-            return res.status(400).json({ success: false, message: "Something Went Wrong" });
+        catch (e) {
+            return res.status(500).json({ success: false, message: "Internal Server Error" });
         }
     },
-    newComment: async (req,res)=>{
-        const {postId} = req.params;
-        const {user_id , commentBody} = req.body
-        try{
+    newComment: async (req, res) => {
+        try {
+            const { postId } = req.params;
+            const { user_id, commentBody } = req.body;
+    
             const post = await postModel.findById(postId);
-            if(post)
-            {
-                const commentStatus = await post.comments.push({user_id,commentBody})
-                if(commentStatus)
-                {
-                    post.save().then(()=>{
-                        return res.status(200).json({ success: true, message: "Commented Successfully" });
-                    });
-                }
-                else
-                {
-                    return res.status(400).json({ success: false, message: "Commented Error" });
-
-                }
-                
-            }
-            else
-            {
+            if (!post) {
                 return res.status(400).json({ success: false, message: "No Post Found" });
             }
+    
+            post.comments.push({ user_id, commentBody });
+            await post.save();
+    
+            return res.status(200).json({ success: true, message: "Commented Successfully" });
+        } catch (e) {
+            return res.status(500).json({ success: false, message: "Internal Server Error" });
         }
-        catch(e)
-        {
-            return res.status(400).json({ success: false, message: "Something Went Wrong" });
-        }
-    },
+    }
+    
 }
 
 export default postCommentsController

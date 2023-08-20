@@ -12,8 +12,8 @@ const authController = {
                 const checkLogin = await bcrypt.compare(password , user.password )
                 if(checkLogin)
                 {
-                    const token = jwt.sign({user},"asadweacasd23321qeqafasd",{
-                        algorithm: "HS256"
+                    const token = jwt.sign({user},process.env.TOKEN_SECRET_KEY,{
+                        algorithm: process.env.JWT_ALGO_TYPE
                     })
                     console.log(token);
                     return res.status(200).json({ success: true, message: "Login Successfully" , token: token });
