@@ -11,11 +11,11 @@ const postsSchema = mongoose.Schema(
             required: true,
         },
         likes: {
-            type: String,
+            type: Number,
             default: 0,
         },
         shares: {
-            type: String,
+            type: Number,
             default: 0,
         },
         user_id: {
