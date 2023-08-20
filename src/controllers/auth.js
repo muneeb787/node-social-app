@@ -1,5 +1,6 @@
 import userModel from "../models/users.js";
 import bcrypt from "bcrypt";
+import  jwt from "jsonwebtoken";
 
 const authController = {
     login: async (req,res)=>{
@@ -11,7 +12,11 @@ const authController = {
                 const checkLogin = await bcrypt.compare(password , user.password )
                 if(checkLogin)
                 {
-                    return res.status(200).json({ success: true, message: "Login Successfully" });
+                    const token = jwt.sign({user},"asadweacasd23321qeqafasd",{
+                        algorithm: "HS256"
+                    })
+                    console.log(token);
+                    return res.status(200).json({ success: true, message: "Login Successfully" , token: token });
                 }
                 else
                 {
