@@ -10,24 +10,42 @@ const postsSchema = mongoose.Schema(
             type: String,
             required: true,
         },
-        likes: {
-            type: Number,
-            default: 0,
-        },
-        shares: {
-            type: Number,
-            default: 0,
-        },
+        likes: [
+            {
+                user_id: {
+                    type: mongoose.Schema.Types.ObjectId ,
+                    required: true,
+                    ref: "users",
+                },
+            }
+        ],
+        shares: [
+            {
+                user_id: {
+                    type: mongoose.Schema.Types.ObjectId ,
+                    required: true,
+                    ref: "users",
+                },
+            }
+        ],
         user_id: {
             type: mongoose.Schema.Types.ObjectId ,
             required: true,
             ref: "users",
-            select: "password"
         },
         comments: [
             {
+                user_id: {
+                    type: mongoose.Schema.Types.ObjectId ,
+                    required: true,
+                    ref: "users",
+                },
                 commentBody: {
                     type: String,
+                },
+                CommentTime: {
+                    type: Date,
+                    default: Date.now()
                 }
             },
         ],

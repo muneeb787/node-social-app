@@ -1,4 +1,4 @@
-import postModel from "../models/posts.js";
+import postModel from "../../models/posts.js";
 
 
 const postController = {
@@ -16,12 +16,12 @@ const postController = {
     getOneById: async (req,res)=>{
         const id = req.params.id;
         try{
-            const user = await postModel.findById(id).populate("user_id")
+            const post = await postModel.findById(id).populate("user_id")
             console.log(id)
             console.log(user)
-            if(user)
+            if(post)
             {
-                return res.status(200).json({ success: true, data: user });
+                return res.status(200).json({ success: true, data: post });
             }
             else
             {
@@ -38,8 +38,8 @@ const postController = {
         console.log(title)
         console.log(description)
         try{
-            const user = await postModel.create({title,description,user_id})
-            if(user)
+            const post = await postModel.create({title,description,user_id})
+            if(post)
             {
                 return res.status(200).json({ success: true, message: "Post Posted Successfully" });
             }
@@ -58,10 +58,10 @@ const postController = {
         const id = req.params.id;
         const data = req.body;
         try{
-            const user = await postModel.findByIdAndUpdate(id,data)
-            if(user)
+            const post = await postModel.findByIdAndUpdate(id,data)
+            if(post)
             {
-                return res.status(200).json({ success: true, message: "Post Updated Successfully", data: user });
+                return res.status(200).json({ success: true, message: "Post Updated Successfully", data: post });
             }
             else
             {
@@ -77,9 +77,9 @@ const postController = {
         const id = req.params.id;
         try{
             const user = await postModel.findByIdAndRemove(id)
-            if(user)
+            if(post)
             {
-                return res.status(200).json({ success: true, message: "Post Deleted Successfully", data: user });
+                return res.status(200).json({ success: true, message: "Post Deleted Successfully", data: post });
             }
             else
             {
