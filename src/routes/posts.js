@@ -19,5 +19,8 @@ postRouter.get("/count-comments/:postId",postCommentsController.countComments);
 postRouter.post("/post-like/:postId",postLikesController.likes);
 postRouter.get("/get-likes/:postId",postLikesController.getAll);
 postRouter.get("/count-likes/:postId",postLikesController.countLikes);
+// User All Posts
+postRouter.get("/postsByUser/:userId",postController.getAllForOneUser);
+
 
 export default postRouter;
