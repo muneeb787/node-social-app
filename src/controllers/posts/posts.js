@@ -1,20 +1,56 @@
+import { populate } from "dotenv";
 import postModel from "../../models/posts.js";
 
 
 const postController = {
     getAll: async (req, res) => {
         try {
-
-            const posts = await postModel.find().populate("user_id")
+            console.log(req.user)
+            const { perPage, limit } = req.params;
+            const posts = await postModel.find().skip(limit * (perPage - 1)).limit(limit).populate("user_id");
             if (!posts) {
                 return res.status(400).json({ success: false, message: "No Post Found" });
             }
-            return res.status(200).json({ success: true, data: posts });
+            return res.status(200).json({ size: posts.length, success: true, data: posts });
         }
         catch (e) {
+            console.log(e)
             return res.status(500).json({ success: false, message: "Internal Server Error" });
         }
     },
+    getAllForOneUserByEmail: async (req, res) => {
+        try {
+            const email = req.params.email;
+    
+            const posts = await postModel.aggregate([
+                {
+                    $lookup: {
+                        from: "users",
+                        localField: "user_id", 
+                        foreignField: "_id",
+                        as: "user"
+                    }
+                },
+                {
+                    $match: {
+                        "user.email": email
+                    }
+                },
+            ]);
+    
+            console.log(posts)
+
+            if (!posts || posts.length === 0) {
+                return res.status(400).json({ success: false, message: "No Posts Found" });
+            }
+    
+            return res.status(200).json({ success: true, data: posts });
+        } catch (e) {
+            console.log(e);
+            return res.status(500).json({ success: false, message: "Internal Server Error" });
+        }
+    },
+    
     getAllForOneUser: async (req, res) => {
         try {
             const user_id = req.params.userId
