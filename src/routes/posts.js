@@ -5,11 +5,11 @@ import postLikesController from "../controllers/posts/postLikes.js";
 import loginAuthorization from "../middleware/loginAuthorization.js";
 import roleAuthorization from "../middleware/roleAuthorization.js";
 import postSchemaValidator from "../validators/postValidation.js";
-import userRole from "../enums/roles.js"
+import userRoles from "../enums/roles.js"
 
 const postRouter = Router();
 
-postRouter.get("/posts/:perPage/:limit", loginAuthorization , roleAuthorization([userRole.Admin]) ,postController.getAll);
+postRouter.get("/posts/:perPage/:limit", loginAuthorization , roleAuthorization([userRoles.Admin]) ,postController.getAll);
 postRouter.get("/post/:id" , loginAuthorization ,postController.getOneById);
 postRouter.post("/post" , loginAuthorization  , postSchemaValidator ,postController.create);
 postRouter.put("/post/:id" , loginAuthorization ,postController.update);
@@ -28,6 +28,7 @@ postRouter.get("/postsByUser/:userId",postController.getAllForOneUser);
 postRouter.get("/postsByUserByEmail/:email",postController.getAllForOneUserByEmail);
 // Find Post 
 postRouter.get("/posts/:search",postController.postFind);
+postRouter.get("/recent-posts",postController.recentPostFind);
 
 
 export default postRouter;

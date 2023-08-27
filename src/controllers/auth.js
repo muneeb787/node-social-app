@@ -23,12 +23,10 @@ const authController = {
             const user = await userModel.findOne({ email });
             if (user) {
                 const checkLogin = await bcrypt.compare(password, user.password);
-                console.log(checkLogin)
                 if (checkLogin) {
                     const token = jwt.sign({ user }, process.env.TOKEN_SECRET_KEY, {
                         algorithm: process.env.JWT_ALGO_TYPE,
                     });
-                    console.log(token);
                     loginEmail(user);
                     return res
                         .status(200)
@@ -38,17 +36,13 @@ const authController = {
                             token: token,
                         });
                 } else {
-                    return res
-                        .status(201)
-                        .json({ success: true, message: "Invalid Credentials" });
+                    return res.status(201).json({ success: true, message: "Invalid Credentials" });
                 }
             } else {
-                return res
-                    .status(400)
-                    .json({ success: true, message: "Invalid Credentials" });
+                return res.status(400).json({ success: true, message: "Invalid Credentials" });
             }
         } catch (e) {
-            console.log(e, "getting Error");
+            return res.status(500).json({ success: false, message: "Internal Server Error" });
         }
     },
     forgetPassword: async (req, res) => {
@@ -64,8 +58,6 @@ const authController = {
             return res.status(200).json({ success: true, message: "Enter Your OTP to reset your password" });
         }
         catch (e) {
-            console.log(e)
-
             return res.status(500).json({ success: false, message: "Internal Server Error" });
         }
     },
@@ -89,7 +81,6 @@ const authController = {
             return res.status(200).json({ success: true, message: "OTP is correct! Change Your Password" });
         }
         catch (e) {
-            console.log(e)
             return res.status(500).json({ success: false, message: "Internal Server Error" });
         }
     },
@@ -101,10 +92,10 @@ const authController = {
             if (!otpPost) {
                 return res.status(400).json({ success: false, message: "Error in Generating OTP , Please Try Later" });
             }
+            otpEmail({email: email , otp: otp})
             return res.status(200).json({ success: true, message: "OTP Regenerated" });
         }
         catch (e) {
-            console.log(e)
             return res.status(500).json({ success: false, message: "Internal Server Error" });
         }
     }
