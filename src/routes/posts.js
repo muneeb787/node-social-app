@@ -4,15 +4,16 @@ import postCommentsController from "../controllers/posts/postComments.js";
 import postLikesController from "../controllers/posts/postLikes.js";
 import loginAuthorization from "../middleware/loginAuthorization.js";
 import roleAuthorization from "../middleware/roleAuthorization.js";
+import postSchemaValidator from "../validators/postValidation.js";
 import userRole from "../enums/roles.js"
 
 const postRouter = Router();
 
 postRouter.get("/posts/:perPage/:limit", loginAuthorization , roleAuthorization([userRole.Admin]) ,postController.getAll);
-postRouter.get("/post/:id",postController.getOneById);
-postRouter.post("/post",postController.create);
-postRouter.put("/post/:id",postController.update);
-postRouter.delete("/post/:id",postController.delete);
+postRouter.get("/post/:id" , loginAuthorization ,postController.getOneById);
+postRouter.post("/post" , loginAuthorization  , postSchemaValidator ,postController.create);
+postRouter.put("/post/:id" , loginAuthorization ,postController.update);
+postRouter.delete("/post/:id" , loginAuthorization ,postController.delete);
 
 //Commenting on Post
 postRouter.post("/post-comment/:postId",postCommentsController.newComment);

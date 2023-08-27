@@ -19,15 +19,6 @@ const postsSchema = mongoose.Schema(
                 },
             }
         ],
-        shares: [
-            {
-                user_id: {
-                    type: mongoose.Schema.Types.ObjectId ,
-                    required: true,
-                    ref: "users",
-                },
-            }
-        ],
         user_id: {
             type: mongoose.Schema.Types.ObjectId ,
             required: true,
