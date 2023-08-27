@@ -7,7 +7,6 @@ const loginAuthorization = (req,res,next) => {
         }
         let token = header.replace("Bearer " , "")
         let decoded = jwt.decode(token)
-        // console.log(decoded)
         req.user = decoded.user;
         next();
     }

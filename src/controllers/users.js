@@ -79,9 +79,9 @@ const userController = {
                     ],
                 });
 
-            return res.json(searched);
+                return res.status(200).json({ success: true, data: searched });
         } catch (e) {
-            console.log(e);
+            return res.status(500).json({ success: false, message: "Internal Server Error" });
         }
     }
 }

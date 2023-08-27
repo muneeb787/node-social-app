@@ -5,10 +5,8 @@ const roleAuthorization = (roles) => (req , res, next) => {
         if (checkRoles == -1) {
             return res.status(401).json({ success: false, message: "Unauthorized" });
         }
-
         next();
     } catch (e) {
-        console.log(e)
         if (e.name === "TokenExpiredError") {
             return res.status(401).json({ success: false, message: "Token expired" });
         } else if (e.name === "JsonWebTokenError") {

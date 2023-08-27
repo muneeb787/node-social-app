@@ -4,7 +4,6 @@ import mongoose from "mongoose";
 
 const connectDB = () => {
     const uri = process.env.MONGODB_CONNECTION_URI;
-    console.log(uri)
     mongoose.connect(uri,{
         autoCreate: true,
         autoIndex: true
