@@ -4,7 +4,6 @@ import postModel from "../../models/posts.js";
 const postController = {
     getAll: async (req, res) => {
         try {
-            console.log(req.user);
             const { perPage, limit } = req.params;
             const posts = await postModel
                 .find()
@@ -13,12 +12,17 @@ const postController = {
                 .limit(limit)
                 .populate("user_id", "-password");
             if (!posts) {
-                return res.status(httpStatusCodes.Bad_Request.code).json({ success: false, message: "No Post Found" });
+                return res
+                    .status(httpStatusCodes.Bad_Request.code)
+                    .json({ success: false, message: "No Post Found" });
             }
-            return res.status(200).json({ size: posts.length, success: true, data: posts });
+            return res
+                .status(200)
+                .json({ size: posts.length, success: true, data: posts });
         } catch (e) {
-            console.log(e);
-            return res.status(500).json({ success: false, message: "Internal Server Error" });
+            return res
+                .status(500)
+                .json({ success: false, message: "Internal Server Error" });
         }
     },
     getAllForOneUserByEmail: async (req, res) => {
@@ -46,16 +50,17 @@ const postController = {
                 },
             ]);
 
-            console.log(posts);
-
             if (!posts || posts.length === 0) {
-                return res.status(400).json({ success: false, message: "No Posts Found" });
+                return res
+                    .status(400)
+                    .json({ success: false, message: "No Posts Found" });
             }
 
             return res.status(200).json({ success: true, data: posts });
         } catch (e) {
-            console.log(e);
-            return res.status(500).json({ success: false, message: "Internal Server Error" });
+            return res
+                .status(500)
+                .json({ success: false, message: "Internal Server Error" });
         }
     },
 
@@ -64,7 +69,9 @@ const postController = {
             const user_id = req.params.userId;
             const posts = await postModel.find({ user_id });
             if (!posts) {
-                return res.status(400).json({ success: false, message: "No Post Found" });
+                return res
+                    .status(400)
+                    .json({ success: false, message: "No Post Found" });
             }
             return res.status(200).json({ success: true, data: posts });
         } catch (e) {
@@ -91,7 +98,7 @@ const postController = {
     },
     create: async (req, res) => {
         try {
-            const { title, description} = req.body;
+            const { title, description } = req.body;
             const user_id = req.user._id;
             const post = await postModel.create({ title, description, user_id });
             if (!post) {
@@ -103,7 +110,6 @@ const postController = {
                 .status(200)
                 .json({ success: true, message: "Post Successfully" });
         } catch (e) {
-            console.log(e)
             return res
                 .status(500)
                 .json({ success: false, message: "Internal Server Error" });
@@ -137,13 +143,11 @@ const postController = {
                     .status(400)
                     .json({ success: false, message: "No Post Found" });
             }
-            return res
-                .status(200)
-                .json({
-                    success: true,
-                    message: "Post Deleted Successfully",
-                    data: post,
-                });
+            return res.status(200).json({
+                success: true,
+                message: "Post Deleted Successfully",
+                data: post,
+            });
         } catch (e) {
             return res
                 .status(500)
@@ -153,19 +157,44 @@ const postController = {
     postFind: async (req, res) => {
         try {
             const search = req.params.search;
-            const searched = await postModel.find(
-                {
-                    $or: [
-                        { title: new RegExp(search, "i") },
-                        { description: new RegExp(search, "i") },
-                    ],
-                })
+            const searched = await postModel.find({
+                $or: [
+                    { title: new RegExp(search, "i") },
+                    { description: new RegExp(search, "i") },
+                ],
+            });
 
-            return res.json(searched);
+            if (!searched) {
+                return res.status(400).json({ success: false, message: "No Post Found" , data: searched });
+            }
+            return res.status(200).json({success: true , data: searched});
         } catch (e) {
-            console.log(e);
+            return res
+                .status(500)
+                .json({ success: false, message: "Internal Server Error" });
         }
     },
+    recentPostFind: async (req, res) => {
+        try {
+            const currentDate = new Date();
+            currentDate.setHours(0, 0, 0, 0);
+            console.log(currentDate)
+            const posts = await postModel.find({
+                createdAt: {
+                    $gte: currentDate
+                }
+            });
+            return res
+                .status(200)
+                .json({ success: true, message: posts });
+        } catch (e) {
+            console.log(e);
+            return res
+                .status(500)
+                .json({ success: false, message: "Internal Server Error" });
+        }
+    }
+    
 };
 
 export default postController;
