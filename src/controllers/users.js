@@ -29,9 +29,9 @@ const userController = {
     },
     create: async (req, res) => {
         try {
-            const { name, email, password } = req.body
+            const { name, email, password, role } = req.body
             const hashPassword = await bcrypt.hash(password, 12)
-            const user = await usersModel.create({ name, email, password: hashPassword })
+            const user = await usersModel.create({ name, email, password: hashPassword , role })
             if (!user) {
                 return res.status(400).json({ success: false, message: "User Not Created" });
             }
@@ -68,6 +68,22 @@ const userController = {
             return res.status(500).json({ success: false, message: "Internal Server Error" });
         }
     },
+    search: async (req, res) => {
+        try {
+            const search = req.params.search;
+            const searched = await usersModel.find(
+                {
+                    $or: [
+                        { name: new RegExp(search, "i") },
+                        { email: new RegExp(search, "i") },
+                    ],
+                });
+
+            return res.json(searched);
+        } catch (e) {
+            console.log(e);
+        }
+    }
 }
 
 export default userController

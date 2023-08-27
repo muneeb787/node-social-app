@@ -8,5 +8,6 @@ userRouter.get("/user/:id",userController.getOneById);
 userRouter.post("/user",userController.create);
 userRouter.put("/user/:id",userController.update);
 userRouter.delete("/user/:id",userController.delete);
+userRouter.get("/user/find/:search",userController.search);
 
 export default userRouter;

@@ -4,10 +4,11 @@ import postCommentsController from "../controllers/posts/postComments.js";
 import postLikesController from "../controllers/posts/postLikes.js";
 import loginAuthorization from "../middleware/loginAuthorization.js";
 import roleAuthorization from "../middleware/roleAuthorization.js";
+import userRole from "../enums/roles.js"
 
 const postRouter = Router();
 
-postRouter.get("/posts/:perPage/:limit", loginAuthorization , roleAuthorization ,postController.getAll);
+postRouter.get("/posts/:perPage/:limit", loginAuthorization , roleAuthorization([userRole.Admin]) ,postController.getAll);
 postRouter.get("/post/:id",postController.getOneById);
 postRouter.post("/post",postController.create);
 postRouter.put("/post/:id",postController.update);
@@ -24,6 +25,8 @@ postRouter.get("/count-likes/:postId",postLikesController.countLikes);
 // User All Posts
 postRouter.get("/postsByUser/:userId",postController.getAllForOneUser);
 postRouter.get("/postsByUserByEmail/:email",postController.getAllForOneUserByEmail);
+// Find Post 
+postRouter.get("/posts/:search",postController.postFind);
 
 
 export default postRouter;

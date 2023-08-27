@@ -1,13 +1,14 @@
-const roleAuthorization = (req, res, next) => {
+const roleAuthorization = (roles) => (req , res, next) => {
     try {
         const role = req.user.role;
-        console.log(role)
-        if (!role || role !== "admin") {
+        const checkRoles = roles.findIndex((elem)=>elem == role);
+        if (checkRoles == -1) {
             return res.status(401).json({ success: false, message: "Unauthorized" });
         }
 
         next();
     } catch (e) {
+        console.log(e)
         if (e.name === "TokenExpiredError") {
             return res.status(401).json({ success: false, message: "Token expired" });
         } else if (e.name === "JsonWebTokenError") {
